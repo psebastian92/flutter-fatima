@@ -3,592 +3,802 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Guía Flutter — App Botonera</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<title>Flutter desde cero</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Mono:wght@400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --bg: #0d1117; --surface: #161b22; --border: #21262d;
-    --blue: #58a6ff; --green: #3fb950; --cyan: #39d4c5;
-    --amber: #d29922; --red: #f85149; --text: #e6edf3;
-    --muted: #8b949e; --yellow: #f0c040;
-  }
-  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; padding: 2rem 1rem 5rem; line-height: 1.6; }
-  .wrapper { max-width: 820px; margin: 0 auto; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0d1117;
+  --surface: #161b22;
+  --surface2: #1c2128;
+  --border: #30363d;
+  --blue: #58a6ff;
+  --green: #3fb950;
+  --cyan: #39d4c5;
+  --amber: #e3b341;
+  --red: #f85149;
+  --purple: #bc8cff;
+  --text: #e6edf3;
+  --muted: #8b949e;
+  --dim: #484f58;
+}
 
-  header { text-align: center; margin-bottom: 3rem; }
-  .badge {
-    display: inline-block; background: rgba(57,212,197,0.1); border: 1px solid rgba(57,212,197,0.3);
-    color: var(--cyan); font-family: 'DM Mono', monospace; font-size: 0.68rem;
-    letter-spacing: 0.15em; text-transform: uppercase; padding: 0.28rem 0.9rem;
-    border-radius: 999px; margin-bottom: 1rem;
-  }
-  h1 { font-family: 'Syne', sans-serif; font-size: clamp(1.5rem,4vw,2.2rem); font-weight: 800; color: #fff; line-height: 1.1; }
-  h1 em { color: var(--yellow); font-style: normal; }
-  .lead { margin-top: 0.5rem; color: var(--muted); font-size: 0.9rem; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  line-height: 1.65;
+  padding-bottom: 6rem;
+}
 
-  /* TOC */
-  .toc {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 12px; padding: 1rem 1.2rem; margin-bottom: 2.5rem;
-    display: flex; flex-direction: column; gap: 0.35rem;
-  }
-  .toc-title { font-family: 'Syne', sans-serif; font-size: 0.75rem; font-weight: 700;
-    letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.4rem; }
-  .toc a { font-size: 0.82rem; color: #94a3b8; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
-  .toc a:hover { color: var(--yellow); }
-  .toc a::before { content: "→"; color: var(--yellow); font-family: 'DM Mono', monospace; font-size: 0.7rem; }
+/* ─── HERO ─── */
+.hero {
+  background: linear-gradient(160deg, #0d1117 0%, #131a26 60%, #0d1117 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 4rem 1.5rem 3.5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -80px; left: 50%; transform: translateX(-50%);
+  width: 500px; height: 300px;
+  background: radial-gradient(ellipse, rgba(88,166,255,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: rgba(88,166,255,0.1); border: 1px solid rgba(88,166,255,0.25);
+  color: var(--blue); font-size: 0.78rem; font-weight: 600;
+  letter-spacing: 0.07em; text-transform: uppercase;
+  padding: 0.3rem 0.9rem; border-radius: 20px; margin-bottom: 1.2rem;
+}
+.hero h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(2rem, 6vw, 3.2rem);
+  font-weight: 800; line-height: 1.1;
+  color: var(--text);
+}
+.hero h1 span { color: var(--blue); }
+.hero-sub {
+  margin-top: 0.9rem; color: var(--muted);
+  font-size: 1rem; max-width: 480px; margin-left: auto; margin-right: auto;
+}
+.hero-meta {
+  display: flex; justify-content: center; gap: 2rem;
+  margin-top: 2rem; flex-wrap: wrap;
+}
+.hero-meta-item { text-align: center; }
+.hero-meta-item .val { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.4rem; color: var(--blue); }
+.hero-meta-item .lbl { font-size: 0.78rem; color: var(--muted); margin-top: 0.1rem; }
 
-  /* SECCIONES */
-  .section { margin-bottom: 2.8rem; scroll-margin-top: 1rem; }
-  .section-header {
-    display: flex; align-items: center; gap: 0.75rem;
-    margin-bottom: 1.1rem; padding-bottom: 0.7rem; border-bottom: 1px solid var(--border);
-  }
-  .snum {
-    width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'DM Mono', monospace; font-size: 0.82rem; font-weight: 500;
-  }
-  .s-blue   { background: rgba(88,166,255,0.12);  color: var(--blue);  border: 1px solid rgba(88,166,255,0.25); }
-  .s-green  { background: rgba(63,185,80,0.12);   color: var(--green); border: 1px solid rgba(63,185,80,0.25); }
-  .s-cyan   { background: rgba(57,212,197,0.12);  color: var(--cyan);  border: 1px solid rgba(57,212,197,0.25); }
-  .s-amber  { background: rgba(210,153,34,0.12);  color: var(--amber); border: 1px solid rgba(210,153,34,0.25); }
-  .s-yellow { background: rgba(240,192,64,0.12);  color: var(--yellow);border: 1px solid rgba(240,192,64,0.25); }
-  .s-red    { background: rgba(248,81,73,0.12);   color: var(--red);   border: 1px solid rgba(248,81,73,0.25); }
-  .section-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.05rem; color: #fff; }
-  .section-sub   { font-size: 0.72rem; color: var(--muted); font-family: 'DM Mono', monospace; margin-top: 1px; }
+/* ─── LAYOUT ─── */
+.page { max-width: 860px; margin: 0 auto; padding: 0 1.5rem; }
 
-  /* PASOS */
-  .steps { display: flex; flex-direction: column; gap: 0.5rem; }
-  .step {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 11px; padding: 0.9rem 1.1rem;
-    display: flex; align-items: flex-start; gap: 0.85rem;
-    transition: border-color 0.15s;
-  }
-  .step:hover { border-color: rgba(240,192,64,0.2); }
-  .sn {
-    width: 24px; height: 24px; border-radius: 6px; flex-shrink: 0;
-    background: rgba(240,192,64,0.09); border: 1px solid rgba(240,192,64,0.2);
-    color: var(--yellow); font-family: 'DM Mono', monospace; font-size: 0.7rem;
-    display: flex; align-items: center; justify-content: center; margin-top: 2px;
-  }
-  .step-body strong { display: block; font-size: 0.87rem; color: #fff; margin-bottom: 3px; }
-  .step-body p      { font-size: 0.8rem; color: var(--muted); }
+/* ─── PROGRESS BAR ─── */
+.progress-bar {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--bg); border-bottom: 1px solid var(--border);
+  padding: 0.6rem 1.5rem; display: flex; gap: 0.35rem; align-items: center;
+  overflow-x: auto; scrollbar-width: none;
+}
+.progress-bar::-webkit-scrollbar { display: none; }
+.pb-step {
+  display: flex; align-items: center; gap: 0.35rem; white-space: nowrap;
+  font-size: 0.75rem; color: var(--muted); flex-shrink: 0;
+}
+.pb-step a { color: inherit; text-decoration: none; }
+.pb-step a:hover { color: var(--blue); }
+.pb-dot {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--surface2); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.65rem; font-weight: 700; color: var(--dim);
+  flex-shrink: 0;
+}
+.pb-sep { color: var(--dim); font-size: 0.7rem; }
 
-  /* COMANDOS */
-  .cmd {
-    background: #010409; border: 1px solid var(--border); border-radius: 8px;
-    padding: 0.5rem 0.85rem; font-family: 'DM Mono', monospace;
-    font-size: 0.78rem; color: #a5d6ff; margin-top: 0.4rem;
-    display: flex; align-items: center; gap: 0.5rem;
-    cursor: pointer; transition: border-color 0.15s; user-select: all;
-  }
-  .cmd:hover { border-color: rgba(88,166,255,0.35); }
-  .cmd::before { content: "$"; color: var(--muted); flex-shrink: 0; }
+/* ─── SECCIONES ─── */
+.section {
+  margin-top: 3rem;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.section-head {
+  display: flex; align-items: center; gap: 1rem;
+  padding: 1.2rem 1.6rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.step-num {
+  width: 2.4rem; height: 2.4rem; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem;
+  flex-shrink: 0;
+}
+.col-blue   { background: rgba(88,166,255,0.15); color: var(--blue); }
+.col-amber  { background: rgba(227,179,65,0.15);  color: var(--amber); }
+.col-green  { background: rgba(63,185,80,0.15);   color: var(--green); }
+.col-cyan   { background: rgba(57,212,197,0.15);  color: var(--cyan); }
+.col-purple { background: rgba(188,140,255,0.15); color: var(--purple); }
+.col-red    { background: rgba(248,81,73,0.15);   color: var(--red); }
 
-  /* NOTAS */
-  .note {
-    border-radius: 9px; padding: 0.7rem 1rem; margin-top: 0.5rem;
-    font-size: 0.8rem; display: flex; align-items: flex-start; gap: 0.5rem; line-height: 1.5;
-  }
-  .ni { flex-shrink: 0; font-size: 0.95rem; margin-top: 1px; }
-  .n-yellow { background: rgba(240,192,64,0.07); border: 1px solid rgba(240,192,64,0.18); color: #f5d980; }
-  .n-green  { background: rgba(63,185,80,0.07);  border: 1px solid rgba(63,185,80,0.18);  color: #86e89b; }
-  .n-blue   { background: rgba(88,166,255,0.07); border: 1px solid rgba(88,166,255,0.18); color: #a5c8ff; }
-  .n-red    { background: rgba(248,81,73,0.07);  border: 1px solid rgba(248,81,73,0.18);  color: #ffa198; }
+.section-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.1rem; }
+.section-sub   { font-size: 0.82rem; color: var(--muted); margin-top: 0.1rem; }
+.section-body  { padding: 1.4rem 1.6rem; display: flex; flex-direction: column; gap: 1.4rem; }
 
-  /* CÓDIGO */
-  .code-wrap {
-    background: #010409; border: 1px solid var(--border); border-radius: 10px;
-    overflow: hidden; margin-top: 0.5rem;
-  }
-  .code-bar {
-    background: #161b22; border-bottom: 1px solid var(--border);
-    padding: 0.4rem 0.9rem; font-family: 'DM Mono', monospace;
-    font-size: 0.68rem; color: var(--muted); display: flex; justify-content: space-between;
-  }
-  .code-body {
-    padding: 1rem 1.1rem; font-family: 'DM Mono', monospace;
-    font-size: 0.76rem; line-height: 1.75; overflow-x: auto; color: #e6edf3;
-  }
-  .k  { color: #ff7b72; }
-  .s  { color: #a5d6ff; }
-  .c  { color: #8b949e; font-style: italic; }
-  .n  { color: #d2a8ff; }
-  .v  { color: #79c0ff; }
-  .fn { color: #e3b341; }
+/* ─── PASOS ─── */
+.paso {
+  display: grid; grid-template-columns: 2rem 1fr; gap: 0 0.85rem;
+}
+.paso-n {
+  width: 2rem; height: 2rem; border-radius: 50%;
+  background: var(--surface2); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.72rem; font-weight: 700; color: var(--muted);
+  flex-shrink: 0; margin-top: 0.05rem;
+}
+.paso-body strong {
+  display: block; font-weight: 600; color: var(--text);
+  margin-bottom: 0.35rem; font-size: 0.95rem;
+}
+.paso-body p { color: var(--muted); font-size: 0.9rem; margin-bottom: 0.4rem; }
+.paso-body p + p { margin-top: 0.3rem; }
 
-  /* YAML */
-  .yaml-key { color: #79c0ff; }
-  .yaml-val { color: #a5d6ff; }
-  .yaml-com { color: #8b949e; font-style: italic; }
+/* ─── CÓDIGO ─── */
+.cmd {
+  font-family: 'DM Mono', monospace;
+  background: #010409; border: 1px solid var(--border);
+  border-radius: 8px; padding: 0.6rem 1rem;
+  font-size: 0.87rem; color: #a5d6ff;
+  margin-top: 0.4rem; display: block;
+  user-select: all;
+}
+.cmd .comment { color: var(--dim); }
 
-  .divider { height: 1px; background: var(--border); margin: 2rem 0; }
+.code-block {
+  background: #010409; border: 1px solid var(--border);
+  border-radius: 10px; overflow: hidden; margin-top: 0.5rem;
+}
+.code-block-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.45rem 1rem;
+  background: var(--surface2); border-bottom: 1px solid var(--border);
+}
+.code-block-head span { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--muted); }
+.code-block-body {
+  padding: 1rem 1.1rem;
+  font-family: 'DM Mono', monospace; font-size: 0.82rem;
+  line-height: 1.75; overflow-x: auto; white-space: pre;
+  color: #e6edf3;
+}
+
+/* ─── NOTAS / ALERTAS ─── */
+.nota {
+  display: flex; gap: 0.7rem; align-items: flex-start;
+  border-radius: 9px; padding: 0.7rem 0.9rem;
+  font-size: 0.87rem; margin-top: 0.6rem; line-height: 1.5;
+}
+.nota-icon { font-size: 1rem; flex-shrink: 0; margin-top: 0.05rem; }
+.nota-red    { background: rgba(248,81,73,0.07);   border: 1px solid rgba(248,81,73,0.2);  color: #ffa198; }
+.nota-blue   { background: rgba(88,166,255,0.07);  border: 1px solid rgba(88,166,255,0.2); color: #a5c8ff; }
+.nota-green  { background: rgba(63,185,80,0.07);   border: 1px solid rgba(63,185,80,0.2);  color: #7ee787; }
+.nota-yellow { background: rgba(227,179,65,0.07);  border: 1px solid rgba(227,179,65,0.2); color: #f0d072; }
+.nota-purple { background: rgba(188,140,255,0.07); border: 1px solid rgba(188,140,255,0.2);color: #d2afff; }
+
+/* ─── INLINE CODE ─── */
+code {
+  font-family: 'DM Mono', monospace; font-size: 0.83em;
+  background: rgba(88,166,255,0.1); color: var(--blue);
+  padding: 0.1em 0.4em; border-radius: 4px;
+}
+
+/* ─── FILE TREE ─── */
+.tree {
+  background: #010409; border: 1px solid var(--border);
+  border-radius: 10px; padding: 1rem 1.2rem;
+  font-family: 'DM Mono', monospace; font-size: 0.8rem;
+  line-height: 2; margin-top: 0.4rem;
+}
+.tree .dir  { color: var(--blue); }
+.tree .hi   { color: var(--amber); font-weight: 500; }
+.tree .dim  { color: var(--dim); }
+
+/* ─── TABLA ─── */
+.tabla { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin-top: 0.6rem; }
+.tabla th { background: var(--surface2); padding: 0.5rem 0.8rem; text-align: left; color: var(--muted); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; border-bottom: 1px solid var(--border); }
+.tabla td { padding: 0.55rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--muted); font-size: 0.87rem; }
+.tabla td:first-child { font-family: 'DM Mono', monospace; color: var(--blue); font-size: 0.82rem; }
+.tabla tr:last-child td { border-bottom: none; }
+
+/* ─── SEPARADOR ─── */
+.divider {
+  display: flex; align-items: center; gap: 1rem;
+  margin: 2.5rem 0 0.5rem; color: var(--dim); font-size: 0.75rem;
+  text-transform: uppercase; letter-spacing: 0.07em;
+}
+.divider::before, .divider::after { content: ''; flex: 1; border-top: 1px solid var(--border); }
+
+/* ─── CONCEPTO FLUTTER ─── */
+.concepto-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-top: 0.6rem; }
+.concepto-card {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 0.9rem 1rem;
+}
+.concepto-card .cc-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.3rem; }
+.concepto-card .cc-title { font-weight: 600; color: var(--text); font-size: 0.92rem; }
+.concepto-card .cc-desc  { font-size: 0.83rem; color: var(--muted); margin-top: 0.3rem; line-height: 1.5; }
+@media(max-width:520px){ .concepto-grid { grid-template-columns: 1fr; } }
+
+@media(max-width:600px){
+  .section-body { padding: 1.1rem 1.1rem; }
+  .section-head { padding: 1rem 1.1rem; }
+  .paso { grid-template-columns: 1.8rem 1fr; }
+}
 </style>
 </head>
 <body>
-<div class="wrapper">
 
-<header>
-  <div class="badge">Grupo Android · App de la mochila</div>
-  <h1>Flutter en VS Code —<br><em>guía completa</em></h1>
-  <p class="lead">Instalación, proyecto nuevo, código de la app y generación de la APK</p>
-</header>
-
-<!-- TOC -->
-<div class="toc">
-  <div class="toc-title">Contenido</div>
-  <a href="#s1">1 — ¿Qué es Flutter y por qué lo usamos?</a>
-  <a href="#s2">2 — Instalar Flutter y configurar VS Code</a>
-  <a href="#s3">3 — Crear el proyecto</a>
-  <a href="#s4">4 — Agregar los paquetes necesarios</a>
-  <a href="#s5">5 — El código completo de la app</a>
-  <a href="#s6">6 — Probar en el celular</a>
-  <a href="#s7">7 — Generar la APK</a>
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">📱 Desarrollo mobile</div>
+  <h1>Flutter<br><span>desde cero</span></h1>
+  <p class="hero-sub">Todo lo que necesitás para instalar el entorno, crear tu primera app y correrla en el celular.</p>
+  <div class="hero-meta">
+    <div class="hero-meta-item"><div class="val">8</div><div class="lbl">pasos</div></div>
+    <div class="hero-meta-item"><div class="val">~1 h</div><div class="lbl">instalación</div></div>
+    <div class="hero-meta-item"><div class="val">gratis</div><div class="lbl">todo el software</div></div>
+  </div>
 </div>
 
-<!-- 1 -->
+<!-- BARRA DE PROGRESO -->
+<nav class="progress-bar">
+  <div class="pb-step"><div class="pb-dot">1</div><a href="#s1">Flutter SDK</a></div>
+  <div class="pb-sep">›</div>
+  <div class="pb-step"><div class="pb-dot">2</div><a href="#s2">Java + Android</a></div>
+  <div class="pb-sep">›</div>
+  <div class="pb-step"><div class="pb-dot">3</div><a href="#s3">VS Code</a></div>
+  <div class="pb-sep">›</div>
+  <div class="pb-step"><div class="pb-dot">4</div><a href="#s4">Primer proyecto</a></div>
+  <div class="pb-sep">›</div>
+  <div class="pb-step"><div class="pb-dot">5</div><a href="#s5">Estructura</a></div>
+  <div class="pb-sep">›</div>
+  <div class="pb-step"><div class="pb-dot">6</div><a href="#s6">Paquetes</a></div>
+  <div class="pb-sep">›</div>
+  <div class="pb-step"><div class="pb-dot">7</div><a href="#s7">Probar en el celu</a></div>
+  <div class="pb-sep">›</div>
+  <div class="pb-step"><div class="pb-dot">8</div><a href="#s8">Generar APK</a></div>
+</nav>
+
+<div class="page">
+
+<!-- ── QUÉ ES FLUTTER ── -->
+<div class="divider">¿Qué es Flutter?</div>
+<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.2rem 1.4rem;margin-bottom:0.5rem;">
+  <p style="color:var(--muted);font-size:0.92rem;margin-bottom:0.8rem;">
+    <strong style="color:var(--text)">Flutter</strong> es un framework de Google que permite crear apps para Android (y también iOS, web y escritorio) escribiendo <strong style="color:var(--text)">un solo código</strong>. El lenguaje que usa se llama <strong style="color:var(--text)">Dart</strong>. No hace falta aprenderlo antes de empezar — lo vas incorporando mientras programás.
+  </p>
+  <div class="concepto-grid">
+    <div class="concepto-card">
+      <div class="cc-label">Flutter</div>
+      <div class="cc-title">El framework</div>
+      <div class="cc-desc">El conjunto de herramientas que nos da los componentes visuales, la lógica de la app y el compilador.</div>
+    </div>
+    <div class="concepto-card">
+      <div class="cc-label">Dart</div>
+      <div class="cc-title">El lenguaje</div>
+      <div class="cc-desc">El lenguaje de programación que usa Flutter. Es similar a Java o JavaScript, fácil de aprender.</div>
+    </div>
+    <div class="concepto-card">
+      <div class="cc-label">VS Code</div>
+      <div class="cc-title">El editor</div>
+      <div class="cc-desc">Donde escribimos el código. Tiene extensiones específicas para Flutter que ayudan mucho.</div>
+    </div>
+    <div class="concepto-card">
+      <div class="cc-label">APK</div>
+      <div class="cc-title">El resultado</div>
+      <div class="cc-desc">El archivo que instala la app en cualquier celular Android, como los que bajás de la Play Store.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── PASO 1 ── -->
+<div class="divider">Instalación del entorno</div>
 <div class="section" id="s1">
-  <div class="section-header">
-    <div class="snum s-blue">1</div>
+  <div class="section-head">
+    <div class="step-num col-blue">1</div>
     <div>
-      <div class="section-title">¿Qué es Flutter y por qué lo usamos?</div>
-      <div class="section-sub">Contexto antes de arrancar</div>
+      <div class="section-title">Instalar Flutter SDK</div>
+      <div class="section-sub">El paquete principal — contiene el compilador y todas las herramientas base</div>
     </div>
   </div>
-  <div class="note n-blue">
-    <span class="ni">📱</span>
-    <div>Flutter es una herramienta de Google para hacer apps de celular. Se programa en un lenguaje que se llama <strong>Dart</strong> — muy parecido a Java, que ya conocen. Lo escriben en VS Code y con un comando se convierte en una APK para instalar en Android.</div>
-  </div>
-  <div class="note n-yellow" style="margin-top:0.5rem">
-    <span class="ni">💡</span>
-    <div>Nuestra app no necesita mucha pantalla — es una app que corre en segundo plano, escucha el Bluetooth del ESP32 y abre Maps cuando llega la señal. La interfaz es solo una pantalla simple que dice "Conectado" o "Esperando…"</div>
-  </div>
-</div>
+  <div class="section-body">
 
-<!-- 2 -->
-<div class="section" id="s2">
-  <div class="section-header">
-    <div class="snum s-green">2</div>
-    <div>
-      <div class="section-title">Instalar Flutter y configurar VS Code</div>
-      <div class="section-sub">Una sola vez por computadora</div>
-    </div>
-  </div>
-  <div class="steps">
-    <div class="step">
-      <div class="sn">1</div>
-      <div class="step-body">
-        <strong>Descargar Flutter SDK</strong>
-        <p>Ir a <strong>flutter.dev</strong> → clic en "Get started" → descargar para Windows. Descomprimir en <code style="font-family:'DM Mono',monospace;color:#a5d6ff">C:\flutter</code> (no en Archivos de programa).</p>
-        <div class="note n-red" style="margin-top:0.4rem">
-          <span class="ni">⚠️</span>
-          <div>La carpeta NO puede tener espacios ni caracteres especiales en la ruta. <code style="font-family:'DM Mono',monospace">C:\flutter</code> funciona. <code style="font-family:'DM Mono',monospace">C:\Mis Archivos\flutter</code> no.</div>
+    <div class="paso">
+      <div class="paso-n">1</div>
+      <div class="paso-body">
+        <strong>Descargar el ZIP de Flutter</strong>
+        <p>Entrar a <strong>flutter.dev</strong> → Get started → Windows. Bajar el ZIP de la versión <strong>Stable</strong> (la más reciente y probada).</p>
+        <div class="nota nota-blue">
+          <span class="nota-icon">ℹ️</span>
+          <div>La versión Stable es la que funciona mejor para empezar. Las versiones Beta o Dev pueden tener errores.</div>
         </div>
       </div>
     </div>
-    <div class="step">
-      <div class="sn">2</div>
-      <div class="step-body">
-        <strong>Agregar Flutter al PATH del sistema</strong>
-        <p>Buscar "Variables de entorno" en Windows → PATH → Nuevo → pegar <code style="font-family:'DM Mono',monospace;color:#a5d6ff">C:\flutter\bin</code> → Aceptar.</p>
-      </div>
-    </div>
-    <div class="step">
-      <div class="sn">3</div>
-      <div class="step-body">
-        <strong>Instalar Java JDK (si no lo tienen)</strong>
-        <p>Flutter necesita Java para compilar la APK. Descargar JDK 17 desde <strong>adoptium.net</strong>. Si ya tienen Java de los proyectos con Tomcat, puede servir.</p>
-        <div class="cmd">java -version</div>
-      </div>
-    </div>
-    <div class="step">
-      <div class="sn">4</div>
-      <div class="step-body">
-        <strong>Instalar Android SDK (sin Android Studio)</strong>
-        <p>Descargar solo las "command-line tools" desde <strong>developer.android.com/studio#command-tools</strong>. Descomprimir en <code style="font-family:'DM Mono',monospace;color:#a5d6ff">C:\android-sdk</code>. Luego en la terminal:</p>
-        <div class="cmd">sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.0"</div>
-      </div>
-    </div>
-    <div class="step">
-      <div class="sn">5</div>
-      <div class="step-body">
-        <strong>Instalar extensiones en VS Code</strong>
-        <p>Abrir VS Code → Extensions (Ctrl+Shift+X) → buscar e instalar:</p>
-        <div class="note n-blue" style="margin-top:0.4rem">
-          <span class="ni">📦</span>
-          <div><strong>Flutter</strong> (de Dart Code) — instala Dart automáticamente también</div>
-        </div>
-      </div>
-    </div>
-    <div class="step">
-      <div class="sn">6</div>
-      <div class="step-body">
-        <strong>Verificar que todo esté bien</strong>
-        <p>Abrir una terminal nueva en VS Code y correr:</p>
-        <div class="cmd">flutter doctor</div>
-        <div class="note n-green" style="margin-top:0.4rem">
-          <span class="ni">✅</span>
-          <div>Tiene que aparecer tilde verde en "Flutter", "Android toolchain" y "VS Code". Si algo tiene ✗, el comando explica qué falta.</div>
-        </div>
-      </div>
-    </div>
-    <div class="step">
-      <div class="sn">7</div>
-      <div class="step-body">
-        <strong>Aceptar licencias de Android</strong>
-        <div class="cmd">flutter doctor --android-licenses</div>
-        <p style="margin-top:0.3rem">Tipear "y" y Enter en cada pregunta.</p>
-      </div>
-    </div>
-  </div>
-</div>
 
-<!-- 3 -->
-<div class="section" id="s3">
-  <div class="section-header">
-    <div class="snum s-cyan">3</div>
-    <div>
-      <div class="section-title">Crear el proyecto</div>
-      <div class="section-sub">El proyecto base de la app</div>
-    </div>
-  </div>
-  <div class="steps">
-    <div class="step">
-      <div class="sn">1</div>
-      <div class="step-body">
-        <strong>Crear el proyecto Flutter</strong>
-        <p>En la terminal de VS Code, ir a la carpeta donde guardan sus proyectos y ejecutar:</p>
-        <div class="cmd">flutter create app_botonera</div>
-        <div class="cmd" style="margin-top:0.3rem">cd app_botonera</div>
-        <div class="cmd" style="margin-top:0.3rem">code .</div>
-      </div>
-    </div>
-    <div class="step">
-      <div class="sn">2</div>
-      <div class="step-body">
-        <strong>Estructura del proyecto</strong>
-        <p>Van a ver estas carpetas. Solo nos importan dos archivos:</p>
-        <div class="code-wrap" style="margin-top:0.4rem">
-          <div class="code-body">
-app_botonera/<br>
-├── <span style="color:var(--blue)">android/</span>         <span style="color:var(--muted)">← configuración Android (tocar poco)</span><br>
-├── <span style="color:var(--blue)">lib/</span><br>
-│   └── <span style="color:var(--yellow)">main.dart</span>    <span style="color:var(--muted)">← ACÁ va todo nuestro código</span><br>
-├── <span style="color:var(--yellow)">pubspec.yaml</span>     <span style="color:var(--muted)">← ACÁ se agregan los paquetes</span><br>
-└── ...
+    <div class="paso">
+      <div class="paso-n">2</div>
+      <div class="paso-body">
+        <strong>Descomprimir en <code>C:\flutter</code></strong>
+        <p>Click derecho sobre el ZIP → Extraer aquí. Mover la carpeta resultante a la raíz del disco:</p>
+        <code class="cmd">C:\flutter</code>
+        <div class="nota nota-red">
+          <span class="nota-icon">⛔</span>
+          <div>
+            <strong>No usar estas ubicaciones:</strong><br>
+            ❌ <code>C:\Archivos de programa\flutter</code> — tiene espacio en el nombre<br>
+            ❌ <code>C:\Usuarios\Sebastián\flutter</code> — tiene tilde<br>
+            ❌ <code>C:\Mi Carpeta\flutter</code> — tiene espacio<br><br>
+            El compilador de Android falla silenciosamente con espacios y caracteres especiales en el path.
           </div>
         </div>
       </div>
     </div>
-  </div>
-</div>
 
-<!-- 4 -->
-<div class="section" id="s4">
-  <div class="section-header">
-    <div class="snum s-amber">4</div>
-    <div>
-      <div class="section-title">Agregar los paquetes necesarios</div>
-      <div class="section-sub">Como agregar librerías en Java, pero más fácil</div>
-    </div>
-  </div>
-  <div class="note n-yellow">
-    <span class="ni">💡</span>
-    <div>En Flutter los paquetes se declaran en <strong>pubspec.yaml</strong> — es como el pom.xml de Maven pero mucho más simple. Después un comando los descarga solos.</div>
-  </div>
-  <p style="font-size:0.82rem;color:var(--muted);margin-top:0.8rem;margin-bottom:0.4rem">Abrir <strong>pubspec.yaml</strong> y reemplazar la sección <code style="font-family:'DM Mono',monospace">dependencies:</code> con esto:</p>
-  <div class="code-wrap">
-    <div class="code-bar"><span>pubspec.yaml</span></div>
-    <div class="code-body">
-<span class="yaml-key">dependencies</span>:<br>
-&nbsp;&nbsp;<span class="yaml-key">flutter</span>:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="yaml-key">sdk</span>: <span class="yaml-val">flutter</span><br>
-&nbsp;&nbsp;<span class="yaml-key">flutter_blue_plus</span>: <span class="yaml-val">^1.31.0</span>  <span class="yaml-com"># Bluetooth BLE</span><br>
-&nbsp;&nbsp;<span class="yaml-key">http</span>: <span class="yaml-val">^1.2.0</span>              <span class="yaml-com"># Para hablar con el Servlet</span><br>
-&nbsp;&nbsp;<span class="yaml-key">url_launcher</span>: <span class="yaml-val">^6.2.0</span>     <span class="yaml-com"># Abrir Maps, llamar, SMS</span><br>
-&nbsp;&nbsp;<span class="yaml-key">flutter_tts</span>: <span class="yaml-val">^4.0.2</span>      <span class="yaml-com"># Hacer hablar al celular</span>
-    </div>
-  </div>
-  <p style="font-size:0.82rem;color:var(--muted);margin-top:0.8rem;margin-bottom:0.4rem">Guardar y ejecutar:</p>
-  <div class="cmd">flutter pub get</div>
-
-  <div style="margin-top:1rem">
-    <p style="font-size:0.82rem;color:var(--muted);margin-bottom:0.4rem">También hay que declarar permisos en <strong>android/app/src/main/AndroidManifest.xml</strong> — agregar antes de <code style="font-family:'DM Mono',monospace">&lt;application&gt;</code>:</p>
-    <div class="code-wrap">
-      <div class="code-bar"><span>AndroidManifest.xml — permisos</span></div>
-      <div class="code-body">
-<span style="color:#8b949e">&lt;!-- Bluetooth --&gt;</span><br>
-&lt;<span class="k">uses-permission</span> android:name=<span class="s">"android.permission.BLUETOOTH"</span>/&gt;<br>
-&lt;<span class="k">uses-permission</span> android:name=<span class="s">"android.permission.BLUETOOTH_ADMIN"</span>/&gt;<br>
-&lt;<span class="k">uses-permission</span> android:name=<span class="s">"android.permission.BLUETOOTH_SCAN"</span>/&gt;<br>
-&lt;<span class="k">uses-permission</span> android:name=<span class="s">"android.permission.BLUETOOTH_CONNECT"</span>/&gt;<br>
-&lt;<span class="k">uses-permission</span> android:name=<span class="s">"android.permission.ACCESS_FINE_LOCATION"</span>/&gt;<br>
-<span style="color:#8b949e">&lt;!-- Internet (para hablar con el Servlet) --&gt;</span><br>
-&lt;<span class="k">uses-permission</span> android:name=<span class="s">"android.permission.INTERNET"</span>/&gt;
+    <div class="paso">
+      <div class="paso-n">3</div>
+      <div class="paso-body">
+        <strong>Agregar Flutter al PATH del sistema</strong>
+        <p>El PATH le dice a Windows dónde buscar programas. Hay que agregarlo para poder escribir <code>flutter</code> en cualquier terminal.</p>
+        <p>Seguir estos pasos:</p>
+        <ol style="margin:0.5rem 0 0 1.2rem;color:var(--muted);font-size:0.9rem;line-height:2;">
+          <li>Tecla Windows → buscar <strong>"variables de entorno"</strong> → abrir</li>
+          <li>Clic en <strong>Variables de entorno...</strong></li>
+          <li>En la sección de abajo (Variables del sistema), seleccionar <strong>Path</strong> → Editar</li>
+          <li>Clic en <strong>Nuevo</strong> → escribir <code>C:\flutter\bin</code></li>
+          <li>Aceptar en todas las ventanas</li>
+        </ol>
       </div>
     </div>
-  </div>
-</div>
 
-<!-- 5 -->
-<div class="section" id="s5">
-  <div class="section-header">
-    <div class="snum s-yellow">5</div>
-    <div>
-      <div class="section-title">El código completo de la app</div>
-      <div class="section-sub">Todo en lib/main.dart</div>
-    </div>
-  </div>
-  <div class="note n-blue">
-    <span class="ni">📋</span>
-    <div>Reemplazar todo el contenido de <strong>lib/main.dart</strong> con este código. Cambiar la URL del Servlet por la dirección real de su servidor.</div>
-  </div>
-  <div class="code-wrap" style="margin-top:0.6rem">
-    <div class="code-bar"><span>lib/main.dart</span></div>
-    <div class="code-body">
-<span class="k">import</span> <span class="s">'package:flutter/material.dart'</span>;<br>
-<span class="k">import</span> <span class="s">'package:flutter_blue_plus/flutter_blue_plus.dart'</span>;<br>
-<span class="k">import</span> <span class="s">'package:http/http.dart'</span> <span class="k">as</span> http;<br>
-<span class="k">import</span> <span class="s">'package:url_launcher/url_launcher.dart'</span>;<br>
-<span class="k">import</span> <span class="s">'package:flutter_tts/flutter_tts.dart'</span>;<br>
-<br>
-<span class="c">// ── CONFIGURACIÓN ──────────────────────────────────</span><br>
-<span class="k">const</span> <span class="v">SERVLET_URL</span> = <span class="s">'http://192.168.1.100:8080/ProyectoBotonera/ConfigServlet'</span>;<br>
-<span class="k">const</span> <span class="v">ESP32_NOMBRE</span> = <span class="s">'Botonera'</span>; <span class="c">// nombre BLE del ESP32</span><br>
-<span class="c">// ───────────────────────────────────────────────────</span><br>
-<br>
-<span class="k">void</span> <span class="fn">main</span>() =&gt; <span class="fn">runApp</span>(<span class="k">const</span> <span class="n">AppBotonera</span>());<br>
-<br>
-<span class="k">class</span> <span class="n">AppBotonera</span> <span class="k">extends</span> <span class="n">StatelessWidget</span> {<br>
-&nbsp;&nbsp;<span class="k">const</span> <span class="n">AppBotonera</span>({<span class="k">super</span>.key});<br>
-&nbsp;&nbsp;<span class="k">@override</span><br>
-&nbsp;&nbsp;<span class="n">Widget</span> <span class="fn">build</span>(<span class="n">BuildContext</span> context) =&gt; <span class="n">MaterialApp</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;title: <span class="s">'Botonera'</span>,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;theme: <span class="n">ThemeData</span>(colorScheme: <span class="n">ColorScheme</span>.dark()),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;home: <span class="k">const</span> <span class="n">PantallaBotonera</span>(),<br>
-&nbsp;&nbsp;);<br>
-}<br>
-<br>
-<span class="k">class</span> <span class="n">PantallaBotonera</span> <span class="k">extends</span> <span class="n">StatefulWidget</span> {<br>
-&nbsp;&nbsp;<span class="k">const</span> <span class="n">PantallaBotonera</span>({<span class="k">super</span>.key});<br>
-&nbsp;&nbsp;<span class="k">@override</span><br>
-&nbsp;&nbsp;<span class="n">State</span>&lt;<span class="n">PantallaBotonera</span>&gt; <span class="fn">createState</span>() =&gt; _<span class="n">Estado</span>();<br>
-}<br>
-<br>
-<span class="k">class</span> _<span class="n">Estado</span> <span class="k">extends</span> <span class="n">State</span>&lt;<span class="n">PantallaBotonera</span>&gt; {<br>
-<br>
-&nbsp;&nbsp;<span class="c">// Guarda la config: "BTN1" → ("maps", "Hospital Argerich...")</span><br>
-&nbsp;&nbsp;<span class="n">Map</span>&lt;<span class="n">String</span>, <span class="n">List</span>&lt;<span class="n">String</span>&gt;&gt; config = {};<br>
-&nbsp;&nbsp;<span class="n">String</span> estado = <span class="s">'Iniciando...'</span>;<br>
-&nbsp;&nbsp;<span class="k">final</span> tts = <span class="n">FlutterTts</span>();<br>
-<br>
-&nbsp;&nbsp;<span class="k">@override</span><br>
-&nbsp;&nbsp;<span class="k">void</span> <span class="fn">initState</span>() {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">super</span>.<span class="fn">initState</span>();<br>
-&nbsp;&nbsp;&nbsp;&nbsp;tts.<span class="fn">setLanguage</span>(<span class="s">'es-AR'</span>);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">descargarConfig</span>();   <span class="c">// 1° baja la config del Servlet</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">conectarBluetooth</span>(); <span class="c">// 2° se conecta al ESP32</span><br>
-&nbsp;&nbsp;}<br>
-<br>
-&nbsp;&nbsp;<span class="c">// ── PASO 1: Bajar config del Servlet ────────────────</span><br>
-&nbsp;&nbsp;<span class="k">Future</span>&lt;<span class="k">void</span>&gt; <span class="fn">descargarConfig</span>() <span class="k">async</span> {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">setState</span>(() =&gt; estado = <span class="s">'Descargando configuración...'</span>);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">try</span> {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">final</span> respuesta = <span class="k">await</span> http.<span class="fn">get</span>(<span class="n">Uri</span>.<span class="fn">parse</span>(<span class="v">SERVLET_URL</span>));<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="c">// El Servlet responde líneas como: "1|maps|Hospital Argerich"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">for</span> (<span class="k">var</span> linea <span class="k">in</span> respuesta.body.<span class="fn">trim</span>().<span class="fn">split</span>(<span class="s">'\n'</span>)) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">final</span> partes = linea.<span class="fn">split</span>(<span class="s">'|'</span>);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">if</span> (partes.length == <span class="v">3</span>) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;config[<span class="s">'BTN${partes[0]}'</span>] = [partes[<span class="v">1</span>], partes[<span class="v">2</span>]];<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">setState</span>(() =&gt; estado = <span class="s">'Config lista. Buscando botonera...'</span>);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;} <span class="k">catch</span> (e) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">setState</span>(() =&gt; estado = <span class="s">'Error al bajar config: $e'</span>);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-&nbsp;&nbsp;}<br>
-<br>
-&nbsp;&nbsp;<span class="c">// ── PASO 2: Conectarse al ESP32 por Bluetooth ────────</span><br>
-&nbsp;&nbsp;<span class="k">Future</span>&lt;<span class="k">void</span>&gt; <span class="fn">conectarBluetooth</span>() <span class="k">async</span> {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">setState</span>(() =&gt; estado = <span class="s">'Buscando botonera por Bluetooth...'</span>);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="n">FlutterBluePlus</span>.<span class="fn">startScan</span>(timeout: <span class="k">const</span> <span class="n">Duration</span>(seconds: <span class="v">10</span>));<br>
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="n">FlutterBluePlus</span>.scanResults.<span class="fn">listen</span>((results) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">for</span> (<span class="k">var</span> r <span class="k">in</span> results) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">if</span> (r.device.platformName == <span class="v">ESP32_NOMBRE</span>) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="n">FlutterBluePlus</span>.<span class="fn">stopScan</span>();<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">_conectarDispositivo</span>(r.device);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-&nbsp;&nbsp;&nbsp;&nbsp;});<br>
-&nbsp;&nbsp;}<br>
-<br>
-&nbsp;&nbsp;<span class="k">Future</span>&lt;<span class="k">void</span>&gt; <span class="fn">_conectarDispositivo</span>(<span class="n">BluetoothDevice</span> dispositivo) <span class="k">async</span> {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">await</span> dispositivo.<span class="fn">connect</span>();<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">setState</span>(() =&gt; estado = <span class="s">'✅ Botonera conectada. Listo.'</span>);<br>
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">final</span> servicios = <span class="k">await</span> dispositivo.<span class="fn">discoverServices</span>();<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">for</span> (<span class="k">var</span> servicio <span class="k">in</span> servicios) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">for</span> (<span class="k">var</span> caracteristica <span class="k">in</span> servicio.characteristics) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">if</span> (caracteristica.properties.notify) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">await</span> caracteristica.<span class="fn">setNotifyValue</span>(<span class="k">true</span>);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="c">// Cada vez que el ESP32 manda algo, se ejecuta esto:</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;caracteristica.lastValueStream.<span class="fn">listen</span>((bytes) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">final</span> mensaje = <span class="n">String</span>.<span class="fn">fromCharCodes</span>(bytes).<span class="fn">trim</span>();<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">ejecutarAccion</span>(mensaje); <span class="c">// ej: "BTN1"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;});<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-&nbsp;&nbsp;}<br>
-<br>
-&nbsp;&nbsp;<span class="c">// ── PASO 3: Ejecutar la acción del botón ─────────────</span><br>
-&nbsp;&nbsp;<span class="k">void</span> <span class="fn">ejecutarAccion</span>(<span class="n">String</span> boton) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">final</span> datos = config[boton];<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">if</span> (datos == <span class="k">null</span>) <span class="k">return</span>; <span class="c">// botón sin configurar</span><br>
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">final</span> tipo  = datos[<span class="v">0</span>]; <span class="c">// "maps", "llamar" o "mensaje"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">final</span> valor = datos[<span class="v">1</span>]; <span class="c">// la dirección, teléfono o texto</span><br>
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">switch</span> (tipo) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">case</span> <span class="s">'maps'</span>:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tts.<span class="fn">speak</span>(<span class="s">'Navegando a $valor'</span>);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">abrirMaps</span>(valor);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">case</span> <span class="s">'llamar'</span>:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tts.<span class="fn">speak</span>(<span class="s">'Llamando'</span>);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">llamar</span>(valor);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">case</span> <span class="s">'mensaje'</span>:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tts.<span class="fn">speak</span>(<span class="s">'Enviando mensaje'</span>);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">enviarMensaje</span>(valor);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-&nbsp;&nbsp;}<br>
-<br>
-&nbsp;&nbsp;<span class="k">void</span> <span class="fn">abrirMaps</span>(<span class="n">String</span> direccion) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">final</span> uri = <span class="n">Uri</span>.<span class="fn">parse</span>(<span class="s">'geo:0,0?q=${Uri.encodeComponent(direccion)}'</span>);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">launchUrl</span>(uri);<br>
-&nbsp;&nbsp;}<br>
-<br>
-&nbsp;&nbsp;<span class="k">void</span> <span class="fn">llamar</span>(<span class="n">String</span> telefono) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">final</span> uri = <span class="n">Uri</span>.<span class="fn">parse</span>(<span class="s">'tel:$telefono'</span>);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">launchUrl</span>(uri);<br>
-&nbsp;&nbsp;}<br>
-<br>
-&nbsp;&nbsp;<span class="k">void</span> <span class="fn">enviarMensaje</span>(<span class="n">String</span> datos) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="c">// formato: "numero|texto del mensaje"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">final</span> partes = datos.<span class="fn">split</span>(<span class="s">'|'</span>);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">final</span> uri = <span class="n">Uri</span>.<span class="fn">parse</span>(<span class="s">'sms:${partes[0]}?body=${Uri.encodeComponent(partes[1])}'</span>);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">launchUrl</span>(uri);<br>
-&nbsp;&nbsp;}<br>
-<br>
-&nbsp;&nbsp;<span class="c">// ── PANTALLA (simple, solo muestra el estado) ────────</span><br>
-&nbsp;&nbsp;<span class="k">@override</span><br>
-&nbsp;&nbsp;<span class="n">Widget</span> <span class="fn">build</span>(<span class="n">BuildContext</span> context) {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">return</span> <span class="n">Scaffold</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;backgroundColor: <span class="k">const</span> <span class="n">Color</span>(<span class="v">0xFF0D1117</span>),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;body: <span class="n">Center</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;child: <span class="n">Column</span>(mainAxisAlignment: <span class="n">MainAxisAlignment</span>.center, children: [<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">const</span> <span class="n">Text</span>(<span class="s">'🔲'</span>, style: <span class="n">TextStyle</span>(fontSize: <span class="v">64</span>)),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">const</span> <span class="n">SizedBox</span>(height: <span class="v">16</span>),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">const</span> <span class="n">Text</span>(<span class="s">'Botonera'</span>, style: <span class="n">TextStyle</span>(color: <span class="n">Colors</span>.white, fontSize: <span class="v">22</span>, fontWeight: <span class="n">FontWeight</span>.bold)),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">const</span> <span class="n">SizedBox</span>(height: <span class="v">8</span>),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="n">Text</span>(estado, style: <span class="k">const</span> <span class="n">TextStyle</span>(color: <span class="n">Colors</span>.grey, fontSize: <span class="v">14</span>), textAlign: <span class="n">TextAlign</span>.center),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">const</span> <span class="n">SizedBox</span>(height: <span class="v">24</span>),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="n">ElevatedButton</span>(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;onPressed: () { <span class="fn">descargarConfig</span>(); <span class="fn">conectarBluetooth</span>(); },<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;child: <span class="k">const</span> <span class="n">Text</span>(<span class="s">'Reconectar'</span>),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;]),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;),<br>
-&nbsp;&nbsp;&nbsp;&nbsp;);<br>
-&nbsp;&nbsp;}<br>
-}
-    </div>
-  </div>
-</div>
-
-<!-- 6 -->
-<div class="section" id="s6">
-  <div class="section-header">
-    <div class="snum s-red">6</div>
-    <div>
-      <div class="section-title">Probar en el celular</div>
-      <div class="section-sub">Sin generar APK todavía</div>
-    </div>
-  </div>
-  <div class="steps">
-    <div class="step">
-      <div class="sn">1</div>
-      <div class="step-body">
-        <strong>Activar opciones de desarrollador en el celular</strong>
-        <p>Ajustes → Acerca del teléfono → tocar "Número de compilación" 7 veces. Aparece "Opciones de desarrollador".</p>
-      </div>
-    </div>
-    <div class="step">
-      <div class="sn">2</div>
-      <div class="step-body">
-        <strong>Activar "Depuración USB"</strong>
-        <p>Ajustes → Opciones de desarrollador → activar "Depuración USB". Conectar el celular a la PC con cable USB.</p>
-      </div>
-    </div>
-    <div class="step">
-      <div class="sn">3</div>
-      <div class="step-body">
-        <strong>Correr la app directo en el celular</strong>
-        <div class="cmd">flutter run</div>
-        <div class="note n-green" style="margin-top:0.4rem">
-          <span class="ni">✅</span>
-          <div>Flutter detecta el celular, compila y lo instala automáticamente. Se ve en tiempo real en el celu.</div>
+    <div class="paso">
+      <div class="paso-n">4</div>
+      <div class="paso-body">
+        <strong>Verificar que Flutter quedó instalado</strong>
+        <p>Abrir una terminal nueva (importante: nueva, no una que ya estaba abierta) y escribir:</p>
+        <code class="cmd">flutter --version</code>
+        <p style="margin-top:0.5rem">Debería aparecer algo como:</p>
+        <div class="code-block">
+          <div class="code-block-body" style="color:var(--green)">Flutter 3.x.x • channel stable
+Dart 3.x.x</div>
+        </div>
+        <div class="nota nota-red" style="margin-top:0.6rem">
+          <span class="nota-icon">⚠️</span>
+          <div>Si dice <em>"flutter no se reconoce como comando"</em>, el PATH no quedó bien. Cerrar y volver a abrir la terminal. Si sigue fallando, revisar el paso 3.</div>
         </div>
       </div>
     </div>
+
   </div>
 </div>
 
-<!-- 7 -->
+<!-- ── PASO 2 ── -->
+<div class="section" id="s2">
+  <div class="section-head">
+    <div class="step-num col-amber">2</div>
+    <div>
+      <div class="section-title">Instalar Java y Android SDK</div>
+      <div class="section-sub">Flutter los necesita para compilar apps Android</div>
+    </div>
+  </div>
+  <div class="section-body">
+
+    <div class="paso">
+      <div class="paso-n">1</div>
+      <div class="paso-body">
+        <strong>Instalar Java JDK 17</strong>
+        <p>Entrar a <strong>adoptium.net</strong> → bajar <strong>OpenJDK 17</strong>, Windows x64, instalador .msi. Ejecutarlo y seguir los pasos (todo por defecto está bien).</p>
+        <div class="nota nota-blue">
+          <span class="nota-icon">ℹ️</span>
+          <div>Java es necesario porque el compilador de Android está escrito en Java. No vamos a programar en Java — solo necesitamos que esté instalado.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="paso">
+      <div class="paso-n">2</div>
+      <div class="paso-body">
+        <strong>Instalar Android Studio</strong>
+        <p>Entrar a <strong>developer.android.com/studio</strong> y bajar el instalador. Durante la instalación, dejar todo por defecto. Android Studio incluye el <strong>Android SDK</strong>, que es el conjunto de herramientas para compilar apps Android.</p>
+        <div class="nota nota-yellow">
+          <span class="nota-icon">💡</span>
+          <div>No vamos a usar Android Studio para programar (eso lo hace VS Code). Lo instalamos solo para que el SDK quede disponible en la PC.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="paso">
+      <div class="paso-n">3</div>
+      <div class="paso-body">
+        <strong>Aceptar las licencias de Android</strong>
+        <p>Flutter necesita que aceptemos los términos de uso del SDK de Android. Abrir la terminal y correr:</p>
+        <code class="cmd">flutter doctor --android-licenses</code>
+        <p style="margin-top:0.4rem">Va a hacer varias preguntas, responder <strong>y</strong> + Enter a cada una.</p>
+      </div>
+    </div>
+
+    <div class="paso">
+      <div class="paso-n">4</div>
+      <div class="paso-body">
+        <strong>Verificar que todo esté instalado correctamente</strong>
+        <code class="cmd">flutter doctor</code>
+        <p style="margin-top:0.5rem">Aparece una lista de chequeos. Los importantes son:</p>
+        <div class="code-block" style="margin-top:0.4rem">
+          <div class="code-block-body" style="font-size:0.78rem"><span style="color:var(--green)">[✓] Flutter (Channel stable)</span>
+<span style="color:var(--green)">[✓] Android toolchain</span>
+<span style="color:var(--green)">[✓] Android Studio</span>
+<span style="color:var(--dim)">[!] VS Code (lo instalamos en el paso 3)</span></div>
+        </div>
+        <div class="nota nota-blue" style="margin-top:0.6rem">
+          <span class="nota-icon">ℹ️</span>
+          <div>Si dice que falta el <strong>NDK</strong>: abrir Android Studio → SDK Manager (ícono de la barra de herramientas) → pestaña SDK Tools → marcar <strong>NDK (Side by side)</strong> → Apply.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── PASO 3 ── -->
+<div class="section" id="s3">
+  <div class="section-head">
+    <div class="step-num col-blue">3</div>
+    <div>
+      <div class="section-title">Configurar VS Code</div>
+      <div class="section-sub">El editor donde vamos a escribir el código</div>
+    </div>
+  </div>
+  <div class="section-body">
+
+    <div class="paso">
+      <div class="paso-n">1</div>
+      <div class="paso-body">
+        <strong>Instalar la extensión de Flutter</strong>
+        <p>En VS Code: abrir el panel de extensiones con <kbd>Ctrl+Shift+X</kbd> → buscar <strong>Flutter</strong> → instalar la publicada por <em>Dart Code</em>.</p>
+        <p>Esto también instala la extensión de <strong>Dart</strong> automáticamente.</p>
+        <div class="nota nota-green">
+          <span class="nota-icon">✅</span>
+          <div>Con estas dos extensiones, VS Code va a resaltar el código, sugerir completado automático, mostrar errores en tiempo real y tener botones para correr la app.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="paso">
+      <div class="paso-n">2</div>
+      <div class="paso-body">
+        <strong>Confirmar que VS Code encontró Flutter</strong>
+        <p>Abrir la paleta de comandos con <kbd>Ctrl+Shift+P</kbd> → escribir <strong>Flutter: New Project</strong>. Si la opción aparece en la lista, todo está correctamente configurado.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── PASO 4 ── -->
+<div class="divider">Tu primer proyecto</div>
+<div class="section" id="s4">
+  <div class="section-head">
+    <div class="step-num col-green">4</div>
+    <div>
+      <div class="section-title">Crear el proyecto</div>
+      <div class="section-sub">Un proyecto Flutter nuevo trae una app de ejemplo funcionando desde el primer momento</div>
+    </div>
+  </div>
+  <div class="section-body">
+
+    <div class="paso">
+      <div class="paso-n">1</div>
+      <div class="paso-body">
+        <strong>Elegir dónde guardar los proyectos</strong>
+        <p>Crear una carpeta en una ruta sin tildes, ñ ni espacios. Por ejemplo:</p>
+        <code class="cmd">C:\proyectos</code>
+      </div>
+    </div>
+
+    <div class="paso">
+      <div class="paso-n">2</div>
+      <div class="paso-body">
+        <strong>Crear el proyecto desde la terminal de VS Code</strong>
+        <p>Abrir la terminal integrada de VS Code con <kbd>Ctrl+`</kbd>. Ir a la carpeta de proyectos y ejecutar:</p>
+        <code class="cmd">cd C:\proyectos<br>flutter create mi_primera_app</code>
+        <div class="nota nota-yellow" style="margin-top:0.5rem">
+          <span class="nota-icon">💡</span>
+          <div>El nombre del proyecto solo puede tener letras minúsculas, números y guiones bajos. No puede empezar con número.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="paso">
+      <div class="paso-n">3</div>
+      <div class="paso-body">
+        <strong>Abrir el proyecto en VS Code</strong>
+        <code class="cmd">cd mi_primera_app<br>code .</code>
+        <p style="margin-top:0.4rem">El punto (<code>.</code>) le dice a VS Code que abra la carpeta actual.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── PASO 5 ── -->
+<div class="section" id="s5">
+  <div class="section-head">
+    <div class="step-num col-cyan">5</div>
+    <div>
+      <div class="section-title">Entender la estructura del proyecto</div>
+      <div class="section-sub">Qué es cada carpeta y qué archivos vas a editar</div>
+    </div>
+  </div>
+  <div class="section-body">
+
+    <div class="paso">
+      <div class="paso-n">1</div>
+      <div class="paso-body">
+        <strong>Mapa del proyecto</strong>
+        <div class="tree">
+<span class="dir">mi_primera_app/</span>
+├── <span class="dir">android/</span>
+│   └── <span class="dir">app/src/main/</span>
+│       └── <span class="hi">AndroidManifest.xml</span>  <span class="dim">← permisos de la app</span>
+│
+├── <span class="dir">lib/</span>
+│   └── <span class="hi">main.dart</span>             <span class="dim">← TODO el código de la app va acá</span>
+│
+├── <span class="hi">pubspec.yaml</span>              <span class="dim">← nombre, versión y paquetes externos</span>
+│
+└── <span class="dim">ios/ web/ linux/ ...</span>      <span class="dim">← otras plataformas, ignorar por ahora</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="paso">
+      <div class="paso-n">2</div>
+      <div class="paso-body">
+        <strong>Los tres archivos clave</strong>
+        <table class="tabla" style="margin-top:0.4rem">
+          <thead><tr><th>Archivo</th><th>Qué hace</th><th>¿Cuándo se toca?</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>lib/main.dart</td>
+              <td>El código de la app: pantallas, botones, lógica</td>
+              <td>Todo el tiempo</td>
+            </tr>
+            <tr>
+              <td>pubspec.yaml</td>
+              <td>Declara los paquetes externos que usa la app</td>
+              <td>Cuando se agrega una librería nueva</td>
+            </tr>
+            <tr>
+              <td>AndroidManifest.xml</td>
+              <td>Permisos que pide la app (internet, cámara, etc.)</td>
+              <td>Cuando la app necesita acceder a algo del sistema</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="paso">
+      <div class="paso-n">3</div>
+      <div class="paso-body">
+        <strong>El <code>main.dart</code> que viene de ejemplo</strong>
+        <p>Flutter crea una app de contador funcionando. Es útil para entender la estructura básica antes de empezar a escribir código propio.</p>
+        <div class="nota nota-purple">
+          <span class="nota-icon">🎯</span>
+          <div>Antes de borrar el código de ejemplo, correrlo en el celular (paso 7) para confirmar que el entorno funciona bien.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── PASO 6 ── -->
+<div class="section" id="s6">
+  <div class="section-head">
+    <div class="step-num col-purple">6</div>
+    <div>
+      <div class="section-title">Agregar paquetes externos</div>
+      <div class="section-sub">Librerías listas para usar que le suman funciones a la app</div>
+    </div>
+  </div>
+  <div class="section-body">
+
+    <div class="paso">
+      <div class="paso-n">1</div>
+      <div class="paso-body">
+        <strong>¿Qué es un paquete?</strong>
+        <p>Un paquete es código que alguien más escribió y publicó para que cualquiera lo pueda usar. En vez de programar todo desde cero, se declara el paquete y Flutter lo descarga automáticamente.</p>
+        <p>El repositorio oficial de paquetes Flutter es <strong>pub.dev</strong> — ahí se busca por nombre y se ven instrucciones de uso.</p>
+      </div>
+    </div>
+
+    <div class="paso">
+      <div class="paso-n">2</div>
+      <div class="paso-body">
+        <strong>Declarar paquetes en <code>pubspec.yaml</code></strong>
+        <p>Agregar los paquetes bajo la sección <code>dependencies</code>. El número después del <code>^</code> es la versión mínima:</p>
+        <div class="code-block">
+          <div class="code-block-head"><span>pubspec.yaml</span></div>
+          <div class="code-block-body"><span style="color:var(--muted)">dependencies:
+  flutter:
+    sdk: flutter</span>
+
+  <span style="color:#a5d6ff">http: ^1.2.1          </span><span style="color:var(--dim)"># hacer pedidos a un servidor</span>
+  <span style="color:#a5d6ff">url_launcher: ^6.2.5  </span><span style="color:var(--dim)"># abrir URLs, llamadas, WhatsApp</span>
+  <span style="color:#a5d6ff">shared_preferences: ^2.2.2 </span><span style="color:var(--dim)"># guardar datos en el celular</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="paso">
+      <div class="paso-n">3</div>
+      <div class="paso-body">
+        <strong>Descargar los paquetes</strong>
+        <p>Después de editar <code>pubspec.yaml</code>, ejecutar en la terminal:</p>
+        <code class="cmd">flutter pub get</code>
+        <div class="nota nota-green" style="margin-top:0.4rem">
+          <span class="nota-icon">✅</span>
+          <div>VS Code suele hacerlo automáticamente al guardar el archivo. Si no, correrlo a mano desde la terminal.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="paso">
+      <div class="paso-n">4</div>
+      <div class="paso-body">
+        <strong>Usar el paquete en el código</strong>
+        <p>Al principio de <code>main.dart</code>, importar el paquete:</p>
+        <div class="code-block">
+          <div class="code-block-head"><span>lib/main.dart</span></div>
+          <div class="code-block-body"><span style="color:#ff7b72">import</span> <span style="color:#a5d6ff">'package:http/http.dart'</span> <span style="color:#ff7b72">as</span> http;
+<span style="color:#ff7b72">import</span> <span style="color:#a5d6ff">'package:url_launcher/url_launcher.dart'</span>;</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── PASO 7 ── -->
+<div class="divider">Probar y distribuir</div>
 <div class="section" id="s7">
-  <div class="section-header">
-    <div class="snum s-cyan">7</div>
+  <div class="section-head">
+    <div class="step-num col-green">7</div>
+    <div>
+      <div class="section-title">Probar la app en el celular</div>
+      <div class="section-sub">Ver la app corriendo en un dispositivo real, en tiempo real</div>
+    </div>
+  </div>
+  <div class="section-body">
+
+    <div class="paso">
+      <div class="paso-n">1</div>
+      <div class="paso-body">
+        <strong>Activar las Opciones de Desarrollador en el celular</strong>
+        <p>Ir a <strong>Ajustes → Acerca del teléfono</strong> → tocar <strong>7 veces seguidas</strong> sobre <strong>Número de compilación</strong>.</p>
+        <p>Aparece el mensaje "Ya sos desarrollador". Volver a Ajustes — ahora aparece una nueva opción: <strong>Opciones para desarrolladores</strong>.</p>
+      </div>
+    </div>
+
+    <div class="paso">
+      <div class="paso-n">2</div>
+      <div class="paso-body">
+        <strong>Activar la Depuración USB</strong>
+        <p>Entrar a <strong>Opciones para desarrolladores</strong> → activar <strong>Depuración por USB</strong>.</p>
+        <p>Conectar el celular a la PC con el cable. El celular va a pedir confirmación — tocar <strong>Permitir</strong>.</p>
+        <div class="nota nota-blue">
+          <span class="nota-icon">ℹ️</span>
+          <div>En algunos celulares "Número de compilación" está en Ajustes → Información del software o Ajustes → Sistema → Acerca del teléfono. El lugar varía según la marca.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="paso">
+      <div class="paso-n">3</div>
+      <div class="paso-body">
+        <strong>Verificar que Flutter detecta el celular</strong>
+        <code class="cmd">flutter devices</code>
+        <p style="margin-top:0.4rem">Debe aparecer el celular en la lista. Si no aparece, probar con otro cable USB (algunos cables solo cargan y no transmiten datos).</p>
+      </div>
+    </div>
+
+    <div class="paso">
+      <div class="paso-n">4</div>
+      <div class="paso-body">
+        <strong>Correr la app</strong>
+        <code class="cmd">flutter run</code>
+        <p style="margin-top:0.4rem">Flutter compila e instala la app en el celular automáticamente. La primera vez tarda más (descarga dependencias). Las siguientes veces es más rápido.</p>
+        <div class="nota nota-green" style="margin-top:0.5rem">
+          <span class="nota-icon">🔥</span>
+          <div>
+            Mientras la app corre, desde la terminal se puede:<br>
+            <strong>r</strong> → recargar cambios sin reiniciar la app (hot reload)<br>
+            <strong>R</strong> → reiniciar la app completamente (hot restart)<br>
+            <strong>q</strong> → cerrar
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="paso">
+      <div class="paso-n">5</div>
+      <div class="paso-body">
+        <strong>Ver los mensajes de debug</strong>
+        <p>Los <code>print('algo')</code> que escribas en el código aparecen en la terminal de VS Code mientras la app corre. Es la forma más simple de ver qué está pasando.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── PASO 8 ── -->
+<div class="section" id="s8">
+  <div class="section-head">
+    <div class="step-num col-cyan">8</div>
     <div>
       <div class="section-title">Generar la APK</div>
-      <div class="section-sub">Para instalar en cualquier celular sin cable</div>
+      <div class="section-sub">Un archivo que se puede instalar en cualquier celular Android sin necesitar la PC</div>
     </div>
   </div>
-  <div class="steps">
-    <div class="step">
-      <div class="sn">1</div>
-      <div class="step-body">
+  <div class="section-body">
+
+    <div class="paso">
+      <div class="paso-n">1</div>
+      <div class="paso-body">
         <strong>Compilar la APK</strong>
-        <div class="cmd">flutter build apk --release</div>
-        <p style="margin-top:0.4rem">Tarda unos minutos la primera vez.</p>
+        <code class="cmd">flutter build apk --release</code>
+        <p style="margin-top:0.4rem">Tarda unos minutos. El flag <code>--release</code> genera una versión optimizada y más liviana (sin herramientas de debug).</p>
       </div>
     </div>
-    <div class="step">
-      <div class="sn">2</div>
-      <div class="step-body">
+
+    <div class="paso">
+      <div class="paso-n">2</div>
+      <div class="paso-body">
         <strong>Encontrar el archivo generado</strong>
-        <p>La APK queda en:</p>
-        <div class="code-wrap" style="margin-top:0.3rem">
-          <div class="code-body" style="color:#a5d6ff">build/app/outputs/flutter-apk/app-release.apk</div>
+        <p>Flutter genera la APK automáticamente en:</p>
+        <div class="code-block">
+          <div class="code-block-body" style="color:#a5d6ff">build/app/outputs/flutter-apk/app-release.apk</div>
         </div>
       </div>
     </div>
-    <div class="step">
-      <div class="sn">3</div>
-      <div class="step-body">
-        <strong>Instalar en el celular</strong>
-        <p>Mandar el archivo por WhatsApp, Drive o cable USB. Abrirlo en el celular. Android va a pedir permiso para instalar apps de orígenes desconocidos — aceptar.</p>
-        <div class="note n-yellow" style="margin-top:0.4rem">
-          <span class="ni">💡</span>
-          <div>Para instalar desde fuera de la Play Store: Ajustes → Seguridad → activar "Instalar apps desconocidas" para el navegador o gestor de archivos que usen.</div>
+
+    <div class="paso">
+      <div class="paso-n">3</div>
+      <div class="paso-body">
+        <strong>Instalar en otro celular</strong>
+        <p>Mandar el archivo por WhatsApp, Google Drive o Bluetooth. Abrirlo en el celular. Android va a mostrar una advertencia sobre aplicaciones de orígenes desconocidos.</p>
+        <div class="nota nota-yellow">
+          <span class="nota-icon">💡</span>
+          <div>
+            Para poder instalar la APK hay que dar permiso una vez:<br>
+            <strong>Ajustes → Seguridad → Instalar apps desconocidas</strong> → activar para el gestor de archivos o el navegador que estén usando.
+          </div>
         </div>
       </div>
     </div>
+
   </div>
 </div>
 
+<div style="text-align:center;padding:3rem 1rem 1rem;color:var(--dim);font-size:0.82rem;">
+  Instituto Técnico Nuestra Señora de Fátima · Desarrollo Mobile
 </div>
+
+</div><!-- /page -->
 </body>
 </html>
